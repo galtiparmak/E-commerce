@@ -23,7 +23,7 @@ public class ProductController {
 
     @PostMapping("/save")
     public ResponseEntity<String> saveProduct(@RequestBody Product product) {
-        if (productService.createProduct(product)) {
+        if (productService.create(product)) {
             return ResponseEntity.ok("Product saved successfully");
         } else {
             return ResponseEntity.badRequest().body("Product not saved");
@@ -56,7 +56,7 @@ public class ProductController {
         } else {
             return ResponseEntity.badRequest().body("Product not reviewed");
         }
-    } // http://localhost:8080/api/product/reviewProduct?userId=1&productName=product1&review=good&rating=5
+    } // http://localhost:8080/api/product/reviewProduct?username=geko&productName=product1&review=good&rating=5
 
     @GetMapping("/getTopRatedProducts")
     public ResponseEntity<List<ProductAverage>> getTopRatedProducts(@RequestParam int k) {

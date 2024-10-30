@@ -20,9 +20,9 @@ public class Order implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private Long userId;
+    private String username;
     @ElementCollection
-    private List<Long> productIds;
+    private List<String> productNames;
     private Date orderDate;
     private Date expectedDeliveryDate;
     private double totalPrice;

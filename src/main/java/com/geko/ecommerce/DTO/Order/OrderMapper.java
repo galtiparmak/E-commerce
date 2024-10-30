@@ -8,8 +8,8 @@ import java.util.Date;
 public class OrderMapper {
     public static OrderDTO toDTO(Order order) {
         return new OrderDTO(
-                order.getUserId(),
-                order.getProductIds(),
+                order.getUsername(),
+                order.getProductNames(),
                 order.getOrderDate(),
                 order.getExpectedDeliveryDate(),
                 order.getTotalPrice()
@@ -18,8 +18,8 @@ public class OrderMapper {
 
     public static Order toOrder(OrderDTO orderDTO) {
         return Order.builder()
-                .userId(orderDTO.getUserId())
-                .productIds(orderDTO.getProductIds())
+                .username(orderDTO.getUsername())
+                .productNames(orderDTO.getProductNames())
                 .orderDate(new Date())
                 .expectedDeliveryDate(getDateAfterDays(3))
                 .totalPrice(orderDTO.getTotalPrice())

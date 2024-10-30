@@ -11,8 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderDTO {
-    private Long userId;
-    private List<Long> productIds;
+    private String username;
+    private List<String> productNames;
     private Date orderDate;
     private Date expectedDeliveryDate;
     private double totalPrice;
