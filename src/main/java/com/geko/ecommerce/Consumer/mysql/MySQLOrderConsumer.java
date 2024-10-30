@@ -33,7 +33,7 @@ public class MySQLOrderConsumer {
             Order order = objectMapper.readValue(orderJson, Order.class);
             order.setOrderDate(new Date());
             order.setExpectedDeliveryDate(getDateAfterThreeDays());
-            order.setTotalPrice(calculateTotalPrice(order.getProductIds()));
+            order.setTotalPrice(calculateTotalPrice(order.getProductNames()));
             orderRepository.save(order);
             System.out.println("Order saved to MySQL: " + order);
         }
@@ -60,12 +60,12 @@ public class MySQLOrderConsumer {
         return calendar.getTime();
     }
 
-    private double calculateTotalPrice(List<Long> productIds) {
+    private double calculateTotalPrice(List<String> productNames) {
         double totalPrice = 0;
-        for (Long productId : productIds) {
-            Optional<Product> optionalProduct = productRepository.findById(productId);
+        for (String product : productNames) {
+            Optional<Product> optionalProduct = productRepository.findByName(product);
             if (optionalProduct.isEmpty()) {
-                throw new RuntimeException("Product not found with id: " + productId);
+                throw new RuntimeException("Product not found with name: " + product);
             }
             double price = optionalProduct.get().getPrice();
             totalPrice += price;
