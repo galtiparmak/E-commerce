@@ -59,4 +59,26 @@ public class KafkaConfig {
     public NewTopic productReviewDeleteTopic() {
         return new NewTopic("product-review-delete-topic", 2, (short) 1);
     }
+
+    // UserNode Topics
+    @Bean
+    public NewTopic userNodeSaveTopic() {
+        return new NewTopic("user-node-save-topic", 2, (short) 1);
+    }
+
+    @Bean
+    public NewTopic userNodeDeleteTopic() {
+        return new NewTopic("user-node-delete-topic", 2, (short) 1);
+    }
+
+    // ProductNode Topics
+    @Bean
+    public NewTopic productNodeSaveTopic() {
+        return new NewTopic("product-node-save-topic", 2, (short) 1);
+    }
+
+    @Bean
+    public NewTopic productNodeDeleteTopic() {
+        return new NewTopic("product-node-delete-topic", 2, (short) 1);
+    }
 }

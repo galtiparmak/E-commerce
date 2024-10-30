@@ -5,6 +5,7 @@ import com.geko.ecommerce.DTO.User.UserDTO;
 import com.geko.ecommerce.Entity.User;
 import com.geko.ecommerce.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,9 +67,9 @@ public class UserController {
         }
     } // http://localhost:8080/api/user/update?username=geko&newPassword=geko123
 
-    @GetMapping("/getBoughtProducts")
-    public ResponseEntity<?> getBoughtProducts(@RequestParam String username) throws InterruptedException {
-        List<ProductDTO> products = userService.getAllBoughtProductsByUser(username);
+    @GetMapping("/getBoughtProductsForUser")
+    public ResponseEntity<List<ProductDTO>> getBoughtProductsForUser(@RequestParam String username) {
+        List<ProductDTO> products = userService.getAllBoughtProductsForUser(username);
         return ResponseEntity.ok(products);
-    } // http://localhost:8080/api/user/getBoughtProducts?username=geko
+    } // http://localhost:8080/api/user/getBoughtProductsForUser?username=geko
 }
