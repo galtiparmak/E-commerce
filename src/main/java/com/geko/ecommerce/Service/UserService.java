@@ -4,7 +4,6 @@ import com.geko.ecommerce.DTO.Product.ProductDTO;
 import com.geko.ecommerce.DTO.Product.ProductMapper;
 import com.geko.ecommerce.DTO.User.UserDTO;
 import com.geko.ecommerce.DTO.User.UserMapper;
-import com.geko.ecommerce.Entity.Product;
 import com.geko.ecommerce.Entity.ProductNode;
 import com.geko.ecommerce.Entity.User;
 import com.geko.ecommerce.Entity.UserNode;
@@ -13,9 +12,10 @@ import com.geko.ecommerce.Producer.UserProducer;
 import com.geko.ecommerce.Repository.mysql.UserRepository;
 import com.geko.ecommerce.Repository.neo4j.UserNodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -29,12 +29,6 @@ public class UserService {
     private final UserProducer userProducer;
     private final UserNodeProducer userNodeProducer;
     private final UserNodeRepository userNodeRepository;
-    @Autowired
-    @Qualifier("transactionManager")
-    private PlatformTransactionManager mysqlTransactionManager;
-    @Autowired
-    @Qualifier("neo4jTransactionManager")
-    private PlatformTransactionManager neo4jTransactionManager;
 
     @Autowired
     public UserService(UserRepository userRepository,
@@ -63,6 +57,16 @@ public class UserService {
         }
         return UserMapper.toDTO(optionalUser.get());
     }
+
+    @Cacheable(value = "users", key = "#username")
+    public UserDTO getUserByUsername(String username) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isEmpty()) {
+            throw new RuntimeException("User not found with username: " + username);
+        }
+        return UserMapper.toDTO((optionalUser.get()));
+    }
+
 
     public boolean saveUser(User user) {
         try {
@@ -96,6 +100,7 @@ public class UserService {
         }
     }
 
+    @CacheEvict(value = "users", key = "#username")
     public boolean deleteUserByUsername(String username) {
         try {
             Optional<User> optionalUser = userRepository.findByUsername(username);
@@ -111,6 +116,7 @@ public class UserService {
         }
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     public boolean deleteAll() {
         try {
             userRepository.deleteAll();
@@ -130,6 +136,7 @@ public class UserService {
             User user = optionalUser.get();
             user.setPassword(newPassword);
             userRepository.save(user);
+            cacheUser(user);
             return true;
         } catch (Exception e) {
             System.err.println("User not found with username: " + username);
@@ -137,6 +144,11 @@ public class UserService {
         }
     }
 
+    @CachePut(value = "users", key = "#user.username")
+    public void cacheUser(User user) {
+    }
+
+    @Cacheable(value = "boughProducts", key = "#username")
     public List<ProductDTO> getAllBoughtProductsForUser(String username){
         Optional<UserNode> optionalUserNode = userNodeRepository.findByUsername(username);
         if (optionalUserNode.isEmpty()) {

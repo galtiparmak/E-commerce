@@ -10,6 +10,7 @@ import com.geko.ecommerce.Producer.ProductNodeProducer;
 import com.geko.ecommerce.Producer.ProductProducer;
 import com.geko.ecommerce.Producer.ProductReviewProducer;
 import com.geko.ecommerce.Repository.elasticsearch.ProductSearchRepository;
+import com.geko.ecommerce.Repository.mongodb.ProductReviewRepository;
 import com.geko.ecommerce.Repository.mysql.ProductAverageRepository;
 import com.geko.ecommerce.Repository.mysql.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +29,7 @@ public class ProductService {
     private final ProductReviewProducer productReviewProducer;
     private final ProductSearchRepository productSearchRepository;
     private final ProductNodeProducer productNodeProducer;
-
-
-    @Autowired
-    @Qualifier("transactionManager")
-    private PlatformTransactionManager transactionManager;
-
-    @Autowired
-    @Qualifier("neo4jTransactionManager")
-    private PlatformTransactionManager neo4jTransactionManager;
+    private final ProductReviewRepository productReviewRepository;
 
     @Autowired
     public ProductService(
@@ -44,13 +37,15 @@ public class ProductService {
             ,ProductProducer productProducer
             ,ProductAverageRepository productAverageRepository
             ,ProductReviewProducer productReviewProducer
-            ,ProductSearchRepository productSearchRepository, ProductNodeProducer productNodeProducer) {
+            ,ProductSearchRepository productSearchRepository, ProductNodeProducer productNodeProducer
+            , ProductReviewRepository productReviewRepository) {
         this.productRepository = productRepository;
         this.productProducer = productProducer;
         this.productAverageRepository = productAverageRepository;
         this.productReviewProducer = productReviewProducer;
         this.productSearchRepository = productSearchRepository;
         this.productNodeProducer = productNodeProducer;
+        this.productReviewRepository = productReviewRepository;
     }
 
     public List<ProductDTO> getAllProducts() {
@@ -74,6 +69,13 @@ public class ProductService {
         return ProductMapper.toDTO(optionalProduct.get());
     }
 
+    public ProductDTO getProductByName(String name) {
+        Optional<Product> optionalProduct = productRepository.findByName(name);
+        if (optionalProduct.isEmpty()) {
+            throw new RuntimeException("Product not found");
+        }
+        return ProductMapper.toDTO(optionalProduct.get());
+    }
 
     public boolean create(Product product) {
         if (product != null) {
@@ -98,11 +100,11 @@ public class ProductService {
         productNodeProducer.create(product);
     }
 
-    public boolean deleteProduct(Long productId) {
+    public boolean deleteProduct(String name) {
         try {
-            Optional<Product> optionalProduct = productRepository.findById(productId);
+            Optional<Product> optionalProduct = productRepository.findByName(name);
             if (optionalProduct.isEmpty()) {
-                throw new RuntimeException("Product not found with id: " + productId);
+                throw new RuntimeException("Product not found with name: " + name);
             }
             Product product = optionalProduct.get();
 
@@ -114,7 +116,7 @@ public class ProductService {
         }
     }
 
-    public boolean reviewProduct(String username, String productName, String review, int rating) {
+    public ProductReview reviewProduct(String username, String productName, String review, int rating) {
         try {
             ProductReview productReview = new ProductReview();
             productReview.setProductName(productName);
@@ -124,11 +126,15 @@ public class ProductService {
             System.out.println("Product review created: " + productReview);
             productReviewProducer.createReview(productReview);
             System.out.println("Product review sent to Kafka: " + productReview);
-            return true;
+            return productReview;
         } catch (RuntimeException e) {
-            System.err.println("An error occurred: " + e.getMessage());
-            return false;
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public List<ProductReview> getReview(String name) {
+        return productReviewRepository.findByProductName(name);
     }
 
     public List<ProductAverage> getTopKRatedProducts(int k) {

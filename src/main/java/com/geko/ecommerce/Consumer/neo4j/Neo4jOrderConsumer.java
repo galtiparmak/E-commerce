@@ -2,7 +2,6 @@ package com.geko.ecommerce.Consumer.neo4j;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geko.ecommerce.Entity.Order;
-import com.geko.ecommerce.Entity.Product;
 import com.geko.ecommerce.Entity.ProductNode;
 import com.geko.ecommerce.Entity.UserNode;
 import com.geko.ecommerce.Repository.neo4j.ProductNodeRepository;

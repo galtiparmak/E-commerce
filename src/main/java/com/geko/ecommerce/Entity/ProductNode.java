@@ -1,6 +1,5 @@
 package com.geko.ecommerce.Entity;
 
-import jakarta.persistence.GeneratedValue;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -6,6 +6,8 @@ import com.geko.ecommerce.Entity.ProductReview;
 import com.geko.ecommerce.Repository.mongodb.ProductReviewRepository;
 import com.geko.ecommerce.Repository.mysql.ProductAverageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 

@@ -2,6 +2,7 @@ package com.geko.ecommerce;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories(basePackages = "com.geko.ecommerce.Repository.mysql")
 @EnableMongoRepositories(basePackages = "com.geko.ecommerce.Repository.mongodb")
 @EnableElasticsearchRepositories(basePackages = "com.geko.ecommerce.Repository.elasticsearch")
+@EnableNeo4jRepositories(basePackages = "com.geko.ecommerce.Repository.neo4j")
+@EnableCaching
 public class EcommerceApplication {
 
 	public static void main(String[] args) {

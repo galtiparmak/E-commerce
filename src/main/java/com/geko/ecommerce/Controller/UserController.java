@@ -31,6 +31,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(id));
     } // http://localhost:8080/api/user/getById?id=1
 
+    @GetMapping("/getByUsername")
+    public ResponseEntity<UserDTO> getUserById(@RequestParam String username) {
+        return ResponseEntity.ok(userService.getUserByUsername(username));
+    } // http://localhost:8080/api/user/getByUsername?username=geko
+
     @PostMapping("/save")
     public ResponseEntity<String> saveUser(@RequestBody User user) {
         if (userService.saveUser(user)) {
